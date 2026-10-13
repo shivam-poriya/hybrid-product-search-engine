@@ -62,7 +62,8 @@ def store_data():
     try:
         # 1. Load all embeddings into memory
         print("Loading embeddings...")
-        embeddings = torch.load(EMBEDDINGS_PATH, map_location="cuda")
+        # CPU is all that's needed here: the vectors are only converted to text for SQL
+        embeddings = torch.load(EMBEDDINGS_PATH, map_location="cpu")
         print(f"Embeddings shape: {embeddings.shape}")
 
         # 2. Connect to PostgreSQL

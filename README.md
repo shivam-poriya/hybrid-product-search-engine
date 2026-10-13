@@ -40,10 +40,32 @@ searchSystem/
 └── README.md
 ```
 
+## Dataset
+
+The catalog is built from a public Amazon product dataset (about 1.2M products), prepared as follows:
+
+1. Keep only English-language products.
+2. Combine the product title and description into one text column, `combined`.
+3. Drop every other column.
+
+The result is saved as `data/products.csv` (not committed, about 1.4 GB):
+
+| Column | Example |
+|---|---|
+| *(unnamed index)* | `167168` |
+| `product_id` | `B003O0MNGC` (Amazon ASIN) |
+| `combined` | `Delta BreezSignature VFB25ACH 80 CFM Exhaust Bath Fan…`<br>`Virtually silent at less than 0.3 sones`<br>`…` |
+
+The **first line** of `combined` is treated as the product title: keyword search weights it
+above the rest, and the UI shows it as the result heading. When building the file, join the title
+and the description with a newline (`title + "\n" + description`) so the two stay separate.
+
 ## Getting started
 
 ```bash
 pip install -r requirements.txt
+
+# 0. Put the prepared catalog at data/products.csv (see Dataset above)
 
 # 1. Database
 docker compose up -d

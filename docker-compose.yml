@@ -15,7 +15,6 @@ services:
 
 volumes:
   postgres_data:
-    # The already-populated volume created when this file lived in Backend/.
-    # external: compose uses it as-is and never creates or deletes it.
+    # Fixed name so the data survives renaming or moving the project folder.
+    # Reused if it already exists, created empty otherwise.
     name: backend_postgres_data
-    external: true
