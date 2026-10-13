@@ -62,8 +62,9 @@ def store_data():
     try:
         # 1. Load all embeddings into memory
         print("Loading embeddings...")
-        # CPU is all that's needed here: the vectors are only converted to text for SQL
-        embeddings = torch.load(EMBEDDINGS_PATH, map_location="cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"Using device: {device}")
+        embeddings = torch.load(EMBEDDINGS_PATH, map_location=device)
         print(f"Embeddings shape: {embeddings.shape}")
 
         # 2. Connect to PostgreSQL
@@ -84,8 +85,9 @@ def store_data():
         ):
             chunk_size = len(chunk_df)
 
-            # Slice the matching embeddings for this chunk
-            chunk_embeddings = embeddings[row_offset : row_offset + chunk_size]
+            # Slice the matching embeddings for this chunk. Copy it to the CPU in one go:
+            # calling .tolist() on each GPU row would be one slow GPU->CPU copy per product
+            chunk_embeddings = embeddings[row_offset : row_offset + chunk_size].cpu()
 
             # Build list of tuples: (id, product_id, description, embedding_vector)
             rows = []

@@ -42,9 +42,11 @@ searchSystem/
 
 ## Dataset
 
-The catalog is built from a public Amazon product dataset (about 1.2M products), prepared as follows:
+The catalog is built from the product catalogue of the
+[Amazon Shopping Queries Dataset (ESCI)](https://github.com/amazon-science/esci-data),
+prepared as follows:
 
-1. Keep only English-language products.
+1. Keep only English-language products (`product_locale == "us"`), about 1.2M products.
 2. Combine the product title and description into one text column, `combined`.
 3. Drop every other column.
 
