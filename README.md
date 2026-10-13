@@ -50,7 +50,18 @@ prepared as follows:
 2. Combine the product title and description into one text column, `combined`.
 3. Drop every other column.
 
-The result is saved as `data/products.csv` (not committed, about 1.4 GB):
+Save the result as **`data/products.csv`**, in a `data/` folder at the project root (create the
+folder yourself; it is not committed because the file is about 1.4 GB). The indexing scripts read
+the catalog from this exact path, and `generate_embeddings.py` writes `data/embeddings.pt` next to it.
+
+```
+searchSystem/
+└── data/
+    ├── products.csv      # you provide this
+    └── embeddings.pt     # created by indexing/generate_embeddings.py
+```
+
+The CSV has these columns:
 
 | Column | Example |
 |---|---|
@@ -62,22 +73,44 @@ The **first line** of `combined` is treated as the product title: keyword search
 above the rest, and the UI shows it as the result heading. When building the file, join the title
 and the description with a newline (`title + "\n" + description`) so the two stay separate.
 
+## Models
+
+`indexing/export_onnx.py` downloads both models from Hugging Face (internet needed on the first
+run), converts them to ONNX and saves them in a **`models/`** folder at the project root. The
+script creates `models/` itself if it doesn't exist. The search API loads the models from this
+exact location:
+
+```
+searchSystem/
+└── models/
+    ├── all-MiniLM-L6-v2-onnx/        # bi-encoder (query embeddings)
+    │   ├── model.onnx
+    │   ├── tokenizer.json
+    │   └── tokenizer_config.json
+    └── ms-marco-MiniLM-L6-v2-onnx/   # cross-encoder (reranking)
+        ├── model.onnx
+        ├── tokenizer.json
+        └── tokenizer_config.json
+```
+
+The folder is not committed; run the export once on each machine before starting the API.
+
 ## Getting started
 
 ```bash
 pip install -r requirements.txt
 
-# 0. Put the prepared catalog at data/products.csv (see Dataset above)
+# 0. Create data/ and put the prepared catalog in it as data/products.csv (see Dataset above)
 
 # 1. Database
 docker compose up -d
 
 # 2. Build the index (one-time)
-python indexing/generate_embeddings.py
-python indexing/store_embeddings.py
+python indexing/generate_embeddings.py   # data/products.csv -> data/embeddings.pt
+python indexing/store_embeddings.py      # load products + embeddings into Postgres
 python indexing/create_vector_index.py
 python indexing/create_text_index.py
-python indexing/export_onnx.py
+python indexing/export_onnx.py           # creates models/ with both ONNX models
 
 # 3. Search API
 uvicorn main:app --app-dir api --port 8002
