@@ -1,0 +1,21 @@
+name: searchsystem
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: postgres-pgvector
+    environment:
+      POSTGRES_DB: product_search
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+    # The already-populated volume created when this file lived in Backend/.
+    # external: compose uses it as-is and never creates or deletes it.
+    name: backend_postgres_data
+    external: true

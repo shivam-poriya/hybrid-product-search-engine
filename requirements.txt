@@ -1,0 +1,19 @@
+# Indexing pipeline (offline: generate embeddings, load Postgres, export ONNX)
+# For the CUDA build of torch: pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+torch
+transformers
+pandas
+onnx
+onnxscript
+
+# Search API (CPU, no PyTorch needed)
+fastapi
+uvicorn
+psycopg2-binary
+onnxruntime
+tokenizers
+numpy
+
+# Frontend
+streamlit>=1.40
+requests>=2.31

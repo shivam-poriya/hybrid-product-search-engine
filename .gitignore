@@ -1,0 +1,14 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Large data files (products.csv, embeddings.pt)
+data/
+
+# Exported ONNX model (regenerate with indexing/export_onnx.py)
+models/
+
+# Editors
+.vscode/
+.idea/
